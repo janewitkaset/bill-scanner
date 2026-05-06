@@ -259,3 +259,27 @@ app.listen(PORT, () => {
   console.log(`📊 Excel: ${BILLS_FILE}`);
   console.log(`   Sheets: florish | janewit | unmatched`);
 });
+
+// ─── Test Anthropic API ───────────────────────
+app.get("/test-api", async (_req, res) => {
+  try {
+    const response = await axios.post(
+      "https://api.anthropic.com/v1/messages",
+      {
+        model: "claude-3-5-sonnet-20241022",
+        max_tokens: 10,
+        messages: [{ role: "user", content: "say hi" }],
+      },
+      {
+        headers: {
+          "x-api-key": process.env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+      }
+    );
+    res.send("✅ API ใช้ได้: " + JSON.stringify(response.data.content));
+  } catch (err) {
+    res.send("❌ Error: " + err.message + " | Status: " + (err.response?.status) + " | " + JSON.stringify(err.response?.data));
+  }
+});
